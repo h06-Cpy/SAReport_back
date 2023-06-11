@@ -1,0 +1,9 @@
+drive-download-20230610T134303Z-001
+migrations
+venv
+alembic.ini
+temp.py
+count_vect_6_9.pickle
+report.db
+lda_6_9.pickle
+.idea

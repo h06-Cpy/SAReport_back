@@ -1,0 +1,105 @@
+topic: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  topic_name: string
+  tweet_number: int
+
+  create_date: datetime
+  last_update: datetime
+}
+
+sent_dist: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  pos_percent: int
+  neg_percent: int
+  neutral_percent: int
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+topic_word: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  word: string
+  value: int
+
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+sent_keyword: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  keyword: string
+  value: float
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+daily_topic_proportion: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  date: date
+  proportion: float
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+daily_sent_score: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  date: date
+  sent_score: float
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+correlation: {
+  shape: sql_table
+  id: int {constraint: primary_key}
+  refer_day: int
+
+  snp500_corr: float
+  nsdaq100_corr: float
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+daily_index: {
+  shape: sql_table
+  date: date {constraint: primary_key}
+
+  snp500: float
+  nasdaq100: float
+
+  create_date: datetime
+  last_update: datetime
+
+  topic_id: {constraint: foreign_key}
+}
+
+sent_dist.topic_id -> topic.id
+topic_word.topic_id -> topic.id
+sent_keyword.topic_id -> topic.id
+daily_topic_proportion.topic_id -> topic.id
+daily_sent_score.topic_id -> topic.id
+correlation.topic_id -> topic.id
