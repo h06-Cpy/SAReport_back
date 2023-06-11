@@ -1,10 +1,21 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from starlette.middleware.cors import CORSMiddleware
 
-from database import Session
+from database import get_db, Session
+from out_scheme import ReportDataModel
+from process_report_data import get_report_data_model
 
 app = FastAPI()
-session = Session()
+origins = ['http://localhost:5173']
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*']
+)
 
-@app.get('/')
-def hi():
-    return 'hi'
+
+@app.get('/', response_model=ReportDataModel)
+def report_data(session: Session = Depends(get_db)):
+    return get_report_data_model(session)

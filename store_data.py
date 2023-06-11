@@ -55,7 +55,7 @@ for i in range(10):  # 토픽 개수(=SA 돌린 횟수)만큼 반복
         tw = TopicWord(word=word, value=value, create_date=datetime.now(), topic=topic)
         session.add(tw)
 
-    # 감성키워드 -> 나중에 pmi로 구하고 정렬해서 저장
+    # 감성키워드 -> 나중에 pmi로 구하고 '정렬해서' 저장
     for t in range(1,7):
         sk = SentKeyword(keyword=f'keyword{t}', value=80 if t<4 else -80, topic=topic, create_date=datetime.now())
         session.add(sk)
