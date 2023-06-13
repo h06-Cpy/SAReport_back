@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from database import get_db
 import pandas as pd
-
+from stock_index import snp500, nasdaq100
 from models import DailyIndex
 
 
@@ -15,13 +15,7 @@ session = get_db()
 datelist = [stamp.date() for stamp in pd.date_range(date(2023, 5, 23), date(2023, 6, 8))]
 
 # 5.23~6.8
-snp500 = [4145.58, 4115.24, 4151.28, 4205.45, 4205.52, 4205.52, 4205.52, 4205.52, 4179.83, 4221.02, 4282.37, 4279.37,
-          4276.37,
-          4273.79, 4283.85, 4267.52, 4293.93]
 
-nasdaq100 = [13728.75, 13650.25, 13976.50, 14332.50, 14332.50, 14332.50, 14332.50, 14396.75, 14300.50, 14472.25,
-             14575.25,
-             14575.25, 14575.25, 14588.75, 14586.50, 14331.50, 14503.00]
 
 norm_snp = [normalization(x, max(snp500), min(snp500)) for x in snp500]
 norm_nasdaq = [normalization(x, max(nasdaq100), min(nasdaq100)) for x in nasdaq100]

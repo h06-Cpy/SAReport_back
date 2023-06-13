@@ -35,10 +35,12 @@ def get_topic_proportions(total_df, lda, count_vect):
         proportions.append([])
 
     for idx, day in enumerate(accum_dfs):
-        fit_vect = count_vect.fit_transform(total_df.text)
+        print(f'day {idx}')
+        fit_vect = count_vect.fit_transform(day.text)
         doc_topic = pd.DataFrame(lda.transform(fit_vect))
 
         for i in range(10): # 토픽 개수만큼
+            print(f'topic {i}: {sum(doc_topic[i]) / len(day)}')
             proportions[i].append(sum(doc_topic[i]) / len(day))
 
     return days, proportions

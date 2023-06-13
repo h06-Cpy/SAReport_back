@@ -26,6 +26,7 @@ class TopicProportionModel(BaseModel):
 class TotalTopicModel(BaseModel):
     sentiment_dist: List[SentDistModel]
     topic_proportions: List[TopicProportionModel]
+    tweet_number: int
 
 
 class CorrelationModel(BaseModel):
@@ -53,6 +54,7 @@ class SentKeywordModel(BaseModel):
 
 class TopicModel(BaseModel):
     topic_name: str
+    tweet_number: int
     correlations: CorrelationModel
     sentiment_corr: List[CorrLineModel]
     sentiment_dist: List[SentDistModel]
