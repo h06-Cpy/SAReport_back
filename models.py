@@ -79,6 +79,7 @@ class DailySentScore(Base):
 
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
+    window_size = Column(Integer, nullable=False)
     sent_score = Column(Float, nullable=False)
     create_date = Column(DateTime, nullable=False)
     last_update = Column(DateTime, nullable=True)
@@ -90,7 +91,9 @@ class DailySentScore(Base):
 class DailyIndex(Base):
     __tablename__ = 'daily_index'
 
-    date = Column(Date, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    date = Column(Date, nullable=False)
+    window_size = Column(Integer, nullable=False)
     create_date = Column(DateTime, nullable=False)
     last_update = Column(DateTime, nullable=True)
 
@@ -102,7 +105,7 @@ class Correlation(Base):
     __tablename__ = 'correlation'
 
     id = Column(Integer, primary_key=True)
-    refer_day = Column(Integer, nullable=False)
+    window_size = Column(Integer, nullable=False)
 
     snp500_corr = Column(Float, nullable=False)
     nasdaq100_corr = Column(Float, nullable=False)

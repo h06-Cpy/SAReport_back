@@ -11,6 +11,7 @@ class SentDistModel(BaseModel):
 
 class TopicProportionModel(BaseModel):
     date: date
+    topic0: float
     topic1: float
     topic2: float
     topic3: float
@@ -20,17 +21,31 @@ class TopicProportionModel(BaseModel):
     topic7: float
     topic8: float
     topic9: float
-    topic10: float
 
+class TopicValueFloat(BaseModel):
+    topic_name: str
+    value: float
+
+
+class TopicValueInt(BaseModel):
+    topic_name: str
+    value: int
+
+class OneDayProportionRank(BaseModel):
+    date: date
+    topic_proportions: List[TopicValueFloat]
 
 class TotalTopicModel(BaseModel):
-    sentiment_dist: List[SentDistModel]
-    topic_proportions: List[TopicProportionModel]
     tweet_number: int
+    sentiment_dist: List[SentDistModel]
+    sentiment_dist_rank: List[TopicValueInt]
+    corr_rank_list: List[TopicValueFloat]
+    topic_proportions: List[TopicProportionModel]
+    topic_proportion_rank: List[OneDayProportionRank]
 
 
 class CorrelationModel(BaseModel):
-    refer_days: List[int]
+    window_sizes: List[int]
     snp500: List[float]
     nasdaq100: List[float]
 
@@ -55,12 +70,17 @@ class SentKeywordModel(BaseModel):
 class TopicModel(BaseModel):
     topic_name: str
     tweet_number: int
+    max_corr_window_size: int
     correlations: CorrelationModel
     sentiment_corr: List[CorrLineModel]
     sentiment_dist: List[SentDistModel]
     topic_words: List[TopicWordModel]
     positive_words: List[SentKeywordModel]
     negative_words: List[SentKeywordModel]
+    most_positive_day: str
+    most_negative_day: str
+    max_proportion_day: str
+    min_proportion_day: str
 
 
 class ReportDataModel(BaseModel):
