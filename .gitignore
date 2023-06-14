@@ -5,6 +5,6 @@ alembic.ini
 temp.py
 count_vect_6_9.pickle
 report.db
-report - Copy.db
+report-copy.db
 lda_6_9.pickle
 .idea

@@ -49,7 +49,6 @@ def get_sentiment_score(sentiment_df):
     sentiment_df['tweetDate'] = sentiment_df['tweetDate'].apply(lambda x: x.split()[0])
 
     # 긍정 부정 중립 중 가장 높은 점수를 해당 감성으로 치고 그 점수를 가져오는 함수
-    # 이건 지금 중립 스코어까지 넣어버림.
     def highest(series):
         import numpy as np
         idx = np.argsort(series)[-1]
@@ -64,13 +63,22 @@ def get_sentiment_score(sentiment_df):
             result = 0
         return result
 
-    sentiment_df['agg_score'] = sentiment_df.iloc[:, -4:-1].apply(highest, axis=1)
+    sentiment_df['agg_score'] = sentiment_df.iloc[:, -3:].apply(highest, axis=1)
     sentiment_score = sentiment_df.groupby('tweetDate').agg(sum)['agg_score'] / sentiment_df.groupby('tweetDate').size()
     return sentiment_score
 
 
-def get_correlation(sentiment_score, stock_index, x_days=1):
+def get_correlation(df, snp, nasdaq, window):
+    sentiment_score = get_sentiment_score(df)
+    window = window + 1
 
-    stock_index = stock_index[:len(sentiment_score)]
+    agg_date = [sentiment_score.index[i - 1] for i in range(window, len(sentiment_score) + 1)]
+    agg_score = [sentiment_score[i - window: i].mean() for i in range(window, len(sentiment_score) + 1)]
 
-    return stats.pearsonr(sentiment_score, stock_index).statistic
+
+    # 일단 지금 결과는 하나의 값으로 나오는데 그래프 그리려면 위의 sentiment_score 배열 자체도 반환해야 함.
+    return (pd.DataFrame(zip(agg_date, agg_score),
+                        columns=['agg_date', 'agg_score']),
+            stats.pearsonr(agg_score,snp).statistic,
+            stats.pearsonr(agg_score, nasdaq).statistic)
+

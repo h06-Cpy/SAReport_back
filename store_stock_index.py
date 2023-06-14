@@ -1,7 +1,6 @@
-from datetime import date, datetime
+from datetime import datetime
 from database import get_db
-import pandas as pd
-from stock_index import snp500, nasdaq100
+from time_series_data import snp500, nasdaq100, datelist
 from models import DailyIndex
 
 
@@ -12,7 +11,6 @@ def normalization(x: float, max: float, min: float):
 
 session = get_db()
 
-datelist = [stamp.date() for stamp in pd.date_range(date(2023, 5, 23), date(2023, 6, 8))]
 
 # 5.23~6.8
 
