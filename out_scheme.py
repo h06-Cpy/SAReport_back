@@ -31,9 +31,7 @@ class TopicValueInt(BaseModel):
     topic_name: str
     value: int
 
-class OneDayProportionRank(BaseModel):
-    date: date
-    topic_proportions: List[TopicValueFloat]
+
 
 class TotalTopicModel(BaseModel):
     tweet_number: int
@@ -41,7 +39,7 @@ class TotalTopicModel(BaseModel):
     sentiment_dist_rank: List[TopicValueInt]
     corr_rank_list: List[TopicValueFloat]
     topic_proportions: List[TopicProportionModel]
-    topic_proportion_rank: List[OneDayProportionRank]
+
 
 
 class CorrelationModel(BaseModel):

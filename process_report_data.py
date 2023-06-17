@@ -5,7 +5,7 @@ from sqlalchemy import text
 from database import Session
 from models import DailyTopicProportion, Topic, DailyIndex, DailySentScore
 from out_scheme import ReportDataModel, SentDistModel, TopicProportionModel, TotalTopicModel, CorrelationModel, \
-    CorrLineModel, TopicWordModel, SentKeywordModel, TopicModel, TopicValueInt, TopicValueFloat, OneDayProportionRank
+    CorrLineModel, TopicWordModel, SentKeywordModel, TopicModel, TopicValueInt, TopicValueFloat
 from time_series_data import datelist
 
 
@@ -16,17 +16,17 @@ def get_report_data_model(session: Session):
     sentiment_dist_rank = get_sentiment_dist_rank(all_topic_list, session)
     corr_rank_list = get_corr_rank_list(all_topic_list, session)
     topic_proportions = []
-    topic_proportion_rank = []
+
     for day in datelist:
-        tpm, tpr = get_topic_proportion_model_and_rank(all_topic_list, day, session)
+        tpm= get_topic_proportion_model_and_rank( day, session)
         topic_proportions.append(tpm)
-        topic_proportion_rank.append(tpr)
+
     total_topic_model = TotalTopicModel(tweet_number=total_topic.tweet_number,
                                         sentiment_dist=get_sent_dist_models(total_topic),
                                         sentiment_dist_rank=sentiment_dist_rank,
                                         corr_rank_list=corr_rank_list,
                                         topic_proportions=topic_proportions,
-                                        topic_proportion_rank=topic_proportion_rank)
+                                        )
 
     # topics 만들기
     topics = []
@@ -68,19 +68,14 @@ def get_sent_dist_models(topic: Topic):
     return sd_list
 
 
-def get_topic_proportion_model_and_rank(all_topic_list, day:date, session:Session):
+def get_topic_proportion_model_and_rank( day:date, session:Session):
     proportions = []
     dtps = session.query(DailyTopicProportion).where(DailyTopicProportion.date == day).all()
     for i in range(10):
         proportions.append(dtps[i].proportion)
-    one_day_proportion_rank = []
-    topic_proportion_sorted = sorted(proportions, reverse=True)
-    for sorted_proportion in topic_proportion_sorted:
-        index = proportions.index(sorted_proportion)
-        one_day_proportion_rank.append(TopicValueFloat(topic_name=all_topic_list[index].topic_name,
-                                                       value=round(sorted_proportion,3)))
 
-    return (TopicProportionModel(date=day, topic0=round(proportions[0], 3),
+
+    return TopicProportionModel(date=day, topic0=round(proportions[0], 3),
                                 topic1=round(proportions[1], 3),
                                 topic2=round(proportions[2], 3),
                                 topic3=round(proportions[3], 3),
@@ -90,7 +85,7 @@ def get_topic_proportion_model_and_rank(all_topic_list, day:date, session:Sessio
                                 topic7=round(proportions[7], 3),
                                 topic8=round(proportions[8], 3),
                                 topic9=round(proportions[9], 3),
-                                ), OneDayProportionRank(date=day, topic_proportions=one_day_proportion_rank))
+                                )
 
 
 def get_max_min_sent_day(topic_id: int, max_corr_window_size, session: Session):
@@ -163,6 +158,6 @@ def get_corr_model_and_max_window(topic: Topic):
         window_sizes.append(correlation.window_size)
         snp500.append(round(correlation.snp500_corr,3))
         nasdaq100.append(round(correlation.nasdaq100_corr,3))
-    mean_corrs = [(snp500[i]+nasdaq100[i])/2 for i in range(len(snp500))]
+    mean_corrs = [abs((snp500[i]+nasdaq100[i])/2) for i in range(len(snp500))]
     max_corr_window_size = mean_corrs.index(max(mean_corrs)) + 1
     return CorrelationModel(window_sizes=window_sizes, snp500=snp500, nasdaq100=nasdaq100), max_corr_window_size
