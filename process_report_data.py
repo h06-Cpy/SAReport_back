@@ -43,7 +43,7 @@ def get_corr_rank_list(all_topic_list, session: Session):
         rows = session.execute(sql)
         avg_corr = next(rows)[0]
         corr_rank_list.append((i,avg_corr))
-    corr_rank_list.sort(key=lambda x: x[1], reverse=True)
+    corr_rank_list.sort(key=lambda x: x[1], reverse=False)
     for corr_rank in corr_rank_list:
         result.append(TopicValueFloat(topic_name=all_topic_list[corr_rank[0]-1].topic_name,
                                       value=round(corr_rank[1],3)))
