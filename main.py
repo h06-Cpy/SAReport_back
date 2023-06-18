@@ -16,7 +16,7 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
-app.mount("/assets", StaticFiles(directory="frontend/dist/assets"))
+# app.mount("/assets", StaticFiles(directory="frontend/dist/assets"))
 
 @app.get('/api', response_model=ReportDataModel)
 def report_data(session: Session = Depends(get_db)):

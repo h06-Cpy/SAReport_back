@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from scipy import stats
 
 def get_sent_dist(df, tweet_number):
@@ -46,26 +47,35 @@ def get_topic_proportions(total_df, lda, count_vect):
     return days, proportions
 
 def get_sentiment_score(sentiment_df):
-    sentiment_df['tweetDate'] = sentiment_df['tweetDate'].apply(lambda x: x.split()[0])
+    sentiment_df['tweetDate'] = pd.to_datetime(sentiment_df['tweetDate'])
+    date_group = sentiment_df.groupby(sentiment_df.tweetDate.dt.date)
+    new_df = pd.DataFrame(columns=['date', 'agg_score'])
 
-    # 긍정 부정 중립 중 가장 높은 점수를 해당 감성으로 치고 그 점수를 가져오는 함수
-    def highest(series):
-        import numpy as np
-        idx = np.argsort(series)[-1]
-        result = series[idx]
+    for group in date_group:
+        total_pos = 0
+        total_neg = 0
+        total_neu = 0
+
+        pos_idx = 2
         neg_idx = 0
         neu_idx = 1
-        # 부정인 경우 -값으로 바꾼다.
-        if idx == neg_idx:
-            result = -result
-        # 중성인 경우 강성 점수를 0으로 바꾼다.
-        if idx == neu_idx:
-            result = 0
-        return result
 
-    sentiment_df['agg_score'] = sentiment_df.iloc[:, -3:].apply(highest, axis=1)
-    sentiment_score = sentiment_df.groupby('tweetDate').agg(sum)['agg_score'] / sentiment_df.groupby('tweetDate').size()
-    return sentiment_score
+        date = group[0]
+        df = group[1]
+        total_tweet = df.shape[0]
+
+        for i in df.iloc[:, -3:].values:
+            idx = np.argsort(i)[-1]
+            if idx == pos_idx:
+                total_pos += 1
+            if idx == neg_idx:
+                total_neg += 1
+            if idx == neu_idx:
+                total_neu += 1
+
+        result = ((total_pos - total_neg) / total_tweet) * (1 - (total_neu / total_tweet))
+        new_df.loc[len(new_df) + 1] = [date, result]  # df에 추가
+    return pd.Series(data=new_df['agg_score']).rename(new_df['date'])
 
 
 def get_correlation(df, snp, nasdaq, window):
@@ -75,10 +85,13 @@ def get_correlation(df, snp, nasdaq, window):
     agg_date = [sentiment_score.index[i - 1] for i in range(window, len(sentiment_score) + 1)]
     agg_score = [sentiment_score[i - window: i].mean() for i in range(window, len(sentiment_score) + 1)]
 
+    print(f'agg_score len: {len(agg_score)}')
+    print(f'snp len: {len(snp)}')
+    print(f'nasdaq len: {len(nasdaq)}')
 
     # 일단 지금 결과는 하나의 값으로 나오는데 그래프 그리려면 위의 sentiment_score 배열 자체도 반환해야 함.
     return (pd.DataFrame(zip(agg_date, agg_score),
                         columns=['agg_date', 'agg_score']),
-            stats.pearsonr(agg_score,snp).statistic,
+            stats.pearsonr(agg_score, snp).statistic,
             stats.pearsonr(agg_score, nasdaq).statistic)
 
